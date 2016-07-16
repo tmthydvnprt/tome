@@ -9,12 +9,12 @@ import collections
 ################################################################################################################################
 def flip_key_val(x, smart=True, container=list):
     """
-    Flip key value pairs of a dictionary with optional 'smart flip' for resulting non-unique keys.
+    Flip key value pairs of a dictionary with optional 'smart flip' for handling new non-unique keys.
 
-    Smart flip (default: smart=True) turns non-unique keyed pairs into a pair where the value is a
-    contianer (e.g. list, set, etc., default: container=list) of the non-unique keyed values.
+    Smart flip (default: smart=True) turns the new non-unique keyed pairs into a single pair where the new value is a
+    contianer (list, set, etc., default: container=list) of the old keys.
 
-    When smart flip is not used the last key and value returned iteritems will be used.
+    When smart flip is not used the last key value pair returned by iteritems will be used.
     """
     if smart:
         y = {}
