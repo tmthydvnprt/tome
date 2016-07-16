@@ -7,7 +7,7 @@ import collections
 
 # General Helper Functions
 ################################################################################################################################
-def flip_key_val(x, smart=True, container=list):
+def flip_key_val(x=None, smart=True, container=list):
     """
     Flip key value pairs of a dictionary with optional 'smart flip' for handling new non-unique keys.
 
@@ -41,6 +41,24 @@ def flip_key_val(x, smart=True, container=list):
     else:
         # Nice dictionary comprehension for 'dump' flip
         return {v : k for k, v in x.iteritems()}
+
+def regex_search(x=None, pattern='', where='keys'):
+    """
+    Search thru keys, values, or both via regex match.
+    """
+
+    # Create precompiled regex if need be
+    pattern_re = re.compile(pattern) if isinstance(pattern, str) or isinstance(pattern, unicode) else pattern
+
+    # Search thru the items and return matches
+    if where is 'keys':
+        result = {k: x[k] for k in x.iterkeys() if pattern_re.match(str(k))}
+    elif where is 'values':
+        result = {k: x[k] for k, v in x.iteritems() if pattern_re.match(str(v))}
+    elif where is 'both':
+        result = {k: x[k] for k, v in x.iteritems() if pattern_re.match(str(k)) or pattern_re.match(str(v))}
+
+    return result
 
 # Custom classes
 ################################################################################################################################
@@ -86,8 +104,9 @@ class Tome(D):
     # order in wich attibutes are access when printing this class
     print_order = ['name', 'description', 'date', 'authority', 'reference', 'living', 'derived', 'source', 'data']
 
-    # Alias some general helper functions
+    # Alias some of the general helper functions as class methods
     flip = flip_key_val
+    regex_search = regex_search
 
     def __init__(self, data=None, name='Tome', description='A tome of information.', authority='', reference='', living=False, derived=False, source=None, date=None):
         """Add new properties to regular dictionary initialization."""
