@@ -108,7 +108,7 @@ def fuzzy_matches(x=None, query='', where='both', score_cutoff=50, limit=10):
 
 # Custom classes
 ################################################################################################################################
-class D(collections.MutableMapping):
+class DataDict(collections.MutableMapping):
     """
     Make a dictionary like object that operates on an attribute called data instead of the typical __dict__.
 
@@ -142,7 +142,7 @@ class D(collections.MutableMapping):
         """Create reproducible string, so that eval(x.__repr__()) == x."""
         return 'D({!r})'.format(self.data)
 
-class Tome(D):
+class Tome(DataDict):
     """
     The tome class, which provides extra dictionary functionality.
     """
