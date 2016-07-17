@@ -3,6 +3,8 @@ Tome - a collection of Python dictionaries and some helpful code to use with the
 """
 
 import copy
+import json
+import pickle
 import pprint
 import collections
 
@@ -182,6 +184,73 @@ class Tome(DataDict):
         converted_self = self.copy()
         converted_self.data = {k : new_type(v) for k, v in converted_self.data.iteritems()}
         return converted_self
+
+    def to_tuples(self):
+        """Convert dictionary to tuples."""
+        return [x for x in self.data.iteritems()]
+
+    def to_lists(self):
+        """Convert dictionary to lists."""
+        return [list(x) for x in self.data.iteritems()]
+
+    def to_pickle(self, fp=None, data_only=False):
+        """Convert tome to pickle. Use data_only=True to convert just the data."""
+        if fp:
+            if isinstance(fp, str) or isinstance(fp, unicode):
+                with open(fp, 'w') as f:
+                    pickle.dump(f, self.data) if data_only else json.dumps(self.__dict__)
+            else:
+                pickle.dump(fp, self.data) if data_only else json.dumps(self.__dict__)
+        else:
+            return pickle.dumps(self.data) if data_only else json.dumps(self.__dict__)
+
+    def to_json(self, fp=None, data_only=False):
+        """Convert tome to json. Use data_only=True to convert just the data."""
+        if fp:
+            if isinstance(fp, str) or isinstance(fp, unicode):
+                with open(fp, 'w') as f:
+                    json.dump(f, self.data) if data_only else json.dumps(self.__dict__)
+            else:
+                json.dump(fp, self.data) if data_only else json.dumps(self.__dict__)
+        else:
+            return json.dumps(self.data) if data_only else json.dumps(self.__dict__)
+
+    def to_csv(self, fp=None, data_only=False, csv_formater='{},{}', header_formater='{}: {}'):
+        """
+        Convert tome to csv. Tome metadata is placed in first row header.
+        Use data_only=True to convert just the data. Control separators with csv_formator and header_formater
+        """
+        csv = '' if data_only else ', '.join([header_formater.format(a, self.__dict__[a]) for a in self.print_order if self.__dict__[a]]) + '\n'
+        csv += csv_formater.format('key', 'value') + '\n'
+        csv += '\n'.join([csv_formater.format(k, v) for k, v in self.data.iteritems()])
+        if fp:
+            if isinstance(fp, str) or isinstance(fp, unicode):
+                with open(fp, 'w') as f:
+                    f.write(csv)
+            else:
+               fp.write(csv)
+        else:
+            return csv
+
+    def to_tsv(self, fp=None, data_only=False, csv_formater='{}\t{}', header_formater='{}: {}'):
+        """Convenience call to csv with tab delimiter."""
+        return self.to_csv(fp=fp, data_only=data_only, csv_formater=csv_formater, header_formater=header_formater)
+
+    def to_html(self, fp=None, data_only=False, header_formater='{}: {}'):
+        """Convert tome to html table. Use data_only=True to convert just the data."""
+        html = '<table>\n'
+        html += '' if data_only else '\t<caption>' + ', '.join([header_formater.format(a, self.__dict__[a]) for a in self.print_order if self.__dict__[a]]) + '</caption>\n'
+        html += '\t<thead>\n\t\t<tr><th>key</th><th>value</th></tr>\n\t</thead>\n'
+        html += '\t<tbody>\n' + '\n'.join(['\t\t<tr><td>{}</td><td>{}</td></tr>'.format(k, v) for k, v in self.data.iteritems()]) + '\n\t</tbody>\n'
+        html += '</table>\n'
+        if fp:
+            if isinstance(fp, str) or isinstance(fp, unicode):
+                with open(fp, 'w') as f:
+                    f.write(html)
+            else:
+               fp.write(html)
+        else:
+            return html
 
     def __str__(self):
         """Pretty print this Tome."""
