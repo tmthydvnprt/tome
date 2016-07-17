@@ -116,8 +116,8 @@ class DataDict(collections.MutableMapping):
 
     Reference credit and thanks
     @aaron-hall (http://stackoverflow.com/a/21368848/2087463) & @jochen-ritzel (http://stackoverflow.com/a/3387975/2087463)
-
     """
+
     def __init__(self, *args, **kwargs):
         """Use an object's data attribute as a dictionary"""
         try:
