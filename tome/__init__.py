@@ -3,9 +3,14 @@ Tome - a collection of Python dictionaries and some helpful code to use with the
 """
 
 import copy
+import pprint
 import collections
 
 from fuzzywuzzy import process
+
+# Various Initialization
+################################################################################################################################
+pp = pprint.PrettyPrinter(indent=1)
 
 # General Helper Functions
 ################################################################################################################################
@@ -143,7 +148,7 @@ class Tome(D):
     """
 
     # order in wich attibutes are access when printing this class
-    print_order = ['name', 'description', 'date', 'authority', 'reference', 'living', 'derived', 'source', 'data']
+    print_order = ['name', 'description', 'date', 'authority', 'reference', 'living', 'derived', 'source']
 
     # Alias some of the general dictionary helper functions as class methods
     flip = flip_key_val
@@ -180,7 +185,9 @@ class Tome(D):
 
     def __str__(self):
         """Pretty print this Tome."""
-        return '\n'.join(['{:11} : {}'.format(k, v) for k, v in [(a, self.__dict__[a]) for a in self.print_order if self.__dict__[a]]])
+        s = '\n'.join(['{:11} : {}'.format(k, v) for k, v in [(a, self.__dict__[a]) for a in self.print_order if self.__dict__[a]]])
+        s += '\n' + pp.pformat(self.data)
+        return s
 
     def __repr__(self):
         """
