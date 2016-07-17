@@ -150,7 +150,8 @@ class Tome(DataDict):
     """
 
     # order in wich attibutes are access when printing this class
-    print_order = ['name', 'description', 'date', 'authority', 'reference', 'living', 'derived', 'source']
+    print_order = ['name', 'description', 'key', 'value', 'date', 'authority', 'reference', 'living', 'derived', 'source']
+    header_order = ['name', 'description', 'date', 'authority', 'reference', 'living', 'derived', 'source']
 
     # Alias some of the general dictionary helper functions as class methods
     flip = flip_key_val
@@ -158,7 +159,7 @@ class Tome(DataDict):
     fuzzy_search = fuzzy_search
     fuzzy_matches = fuzzy_matches
 
-    def __init__(self, data=None, name='Tome', description='A tome of information.', authority='', reference='', living=False, derived=False, source=None, date=None):
+    def __init__(self, data=None, name='Tome', description='A container of information.', key='', value='', authority='', reference='', living=False, derived=False, source=None, date=None):
         """Add new properties to regular dictionary initialization."""
         # The 'real' dictionary
         self.data = data
@@ -166,6 +167,8 @@ class Tome(DataDict):
         self.name = name
         self.description = description
         self.date = date
+        self.key = key
+        self.value = value
         # Organization that sets the definition
         self.authority = authority
         # URL of reference data
@@ -220,8 +223,8 @@ class Tome(DataDict):
         Convert tome to csv. Tome metadata is placed in first row header.
         Use data_only=True to convert just the data. Control separators with csv_formator and header_formater
         """
-        csv = '' if data_only else ', '.join([header_formater.format(a, self.__dict__[a]) for a in self.print_order if self.__dict__[a]]) + '\n'
-        csv += csv_formater.format('key', 'value') + '\n'
+        csv = '' if data_only else ', '.join([header_formater.format(a, self.__dict__[a]) for a in self.header_order if self.__dict__[a]]) + '\n'
+        csv += csv_formater.format(self.key, self.value) + '\n'
         csv += '\n'.join([csv_formater.format(k, v) for k, v in self.data.iteritems()])
         if fp:
             if isinstance(fp, str) or isinstance(fp, unicode):
@@ -239,8 +242,8 @@ class Tome(DataDict):
     def to_html(self, fp=None, data_only=False, header_formater='{}: {}'):
         """Convert tome to html table. Use data_only=True to convert just the data."""
         html = '<table>\n'
-        html += '' if data_only else '\t<caption>' + ', '.join([header_formater.format(a, self.__dict__[a]) for a in self.print_order if self.__dict__[a]]) + '</caption>\n'
-        html += '\t<thead>\n\t\t<tr><th>key</th><th>value</th></tr>\n\t</thead>\n'
+        html += '' if data_only else '\t<caption>' + ', '.join([header_formater.format(a, self.__dict__[a]) for a in self.header_order if self.__dict__[a]]) + '</caption>\n'
+        html += '\t<thead>\n\t\t<tr><th>{}</th><th>{}</th></tr>\n\t</thead>\n'.format(self.key, self.value)
         html += '\t<tbody>\n' + '\n'.join(['\t\t<tr><td>{}</td><td>{}</td></tr>'.format(k, v) for k, v in self.data.iteritems()]) + '\n\t</tbody>\n'
         html += '</table>\n'
         if fp:
