@@ -172,9 +172,11 @@ class Tome(D):
     def copy(self, deep=True):
         return copy.deepcopy(self) if deep else copy.copy(self)
 
-    def astype(self, new_type=):
+    def astype(self, new_type=lambda x: x):
         """Convert values to a different type"""
-        pass
+        converted_self = self.copy()
+        converted_self.data = {k : new_type(v) for k, v in converted_self.data.iteritems()}
+        return converted_self
 
     def __str__(self):
         """Pretty print this Tome."""
