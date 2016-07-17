@@ -5,6 +5,8 @@ Tome - a collection of Python dictionaries and some helpful code to use with the
 import copy
 import collections
 
+from fuzzywuzzy import process
+
 # General Helper Functions
 ################################################################################################################################
 def flip_key_val(x=None, smart=True, container=list):
@@ -42,7 +44,7 @@ def flip_key_val(x=None, smart=True, container=list):
         # Nice dictionary comprehension for 'dump' flip
         return {v : k for k, v in x.iteritems()}
 
-def regex_search(x=None, pattern='', where='keys'):
+def regex_search(x=None, pattern='', where='both'):
     """
     Search thru keys, values, or both via regex match.
     """
@@ -58,6 +60,45 @@ def regex_search(x=None, pattern='', where='keys'):
         result = {k: x[k] for k, v in x.iteritems() if pattern_re.match(str(k)) or pattern_re.match(str(v))}
 
     return result
+
+def fuzzy_search(x=None, query='', where='both', score_cutoff=50, limit=10):
+    """
+    Search thru keys, values, or both via fuzzy string comparison.
+    """
+
+    if where is 'keys':
+        matches = process.extractBests(query, x.keys(), score_cutoff=score_cutoff, limit=limit)
+        results = {k : x[k] for k, score in matches}
+    elif where is 'values':
+        matches = process.extractBests(query, x, score_cutoff=score_cutoff, limit=limit)
+        results = {k : v for v, score, k in matches}
+    elif where is 'both':
+        key_matches = process.extractBests(query, x.keys(), score_cutoff=score_cutoff, limit=limit)
+        key_results = {k : x[k] for k, score in key_matches}
+        val_matches = process.extractBests(query, x, score_cutoff=score_cutoff, limit=limit)
+        val_results = {k : v for v, score, k in val_matches}
+        # Combine results
+        results = key_results.copy()
+        results.update(val_results)
+
+    return results
+
+def fuzzy_matches(x=None, query='', where='both', score_cutoff=50, limit=10):
+    """
+    Get the internal matches used in fuzzy search. Exposses the scores of each match
+    """
+
+    if where is 'keys':
+        matches = process.extractBests(query, x.keys(), score_cutoff=score_cutoff, limit=limit)
+    elif where is 'values':
+        matches = process.extractBests(query, x, score_cutoff=score_cutoff, limit=limit)
+    elif where is 'both':
+        key_matches = process.extractBests(query, x.keys(), score_cutoff=score_cutoff, limit=limit)
+        val_matches = process.extractBests(query, x, score_cutoff=score_cutoff, limit=limit)
+        # Combine results
+        results = key_matches + val_matches
+
+    return results
 
 # Custom classes
 ################################################################################################################################
