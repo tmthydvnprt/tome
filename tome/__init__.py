@@ -59,33 +59,6 @@ def regex_search(x=None, pattern='', where='keys'):
 
     return result
 
-def levenshtein_distance(s='', t=''):
-    """Calculate the levenshtein distance between two strings"""
-    # trivial cases
-    if s == t:
-        return 0
-    if len(s) == 0:
-        return len(t)
-    if len(t) == 0:
-        return len(s)
-
-    # Create empty list for current row
-    v1 = range(0, len(t) + 1)
-    # Create list for previous row, prefill with row 1 distances
-    v0 = [0] * (len(t) + 1)
-    # Calculate v1 (current row distance) from the v0 (previous row distance)
-    for i in xrange(len(s)):
-        # edit distance is delete (i+1) chars from s to metch empty t
-        v1[0] = i + 1
-        # use formula to fill in row
-        for j in xrange(0, len(t)):
-            cost = 0 if s[i] == t[j] else 1
-            v1[j + 1] = min(v1[j] + 1, v0[j + 1] + 1, v0[j] + cost)
-        # copy v1 (current row) to v0 (last row)
-        v0 = list(v1)
-
-    return v1[len(t)]
-
 # Custom classes
 ################################################################################################################################
 class D(collections.MutableMapping):
