@@ -85,7 +85,8 @@ def fuzzy_search(x=None, query='', where='both', score_cutoff=50, limit=10):
 
 def fuzzy_matches(x=None, query='', where='both', score_cutoff=50, limit=10):
     """
-    Get the internal matches used in fuzzy search. Exposses the scores of each match
+    Get the internal matches used in fuzzy search. Exposses the scores of each match.
+    If item is a 2 tuple match is on a key, if the item is a 3 tuple match is on a value.
     """
 
     if where is 'keys':
@@ -144,9 +145,11 @@ class Tome(D):
     # order in wich attibutes are access when printing this class
     print_order = ['name', 'description', 'date', 'authority', 'reference', 'living', 'derived', 'source', 'data']
 
-    # Alias some of the general helper functions as class methods
+    # Alias some of the general dictionary helper functions as class methods
     flip = flip_key_val
     regex_search = regex_search
+    fuzzy_search = fuzzy_search
+    fuzzy_matches = fuzzy_matches
 
     def __init__(self, data=None, name='Tome', description='A tome of information.', authority='', reference='', living=False, derived=False, source=None, date=None):
         """Add new properties to regular dictionary initialization."""
