@@ -207,16 +207,16 @@ class Tome(DataDict):
         else:
             return pickle.dumps(self.data) if data_only else json.dumps(self.__dict__)
 
-    def to_json(self, fp=None, data_only=False):
+    def to_json(self, fp=None, data_only=False, indent=4):
         """Convert tome to json. Use data_only=True to convert just the data."""
         if fp:
             if isinstance(fp, str) or isinstance(fp, unicode):
                 with open(fp, 'w') as f:
-                    json.dump(f, self.data) if data_only else json.dumps(self.__dict__)
+                    json.dump(f, self.data, indent=indent) if data_only else json.dump(self.__dict__, indent=indent)
             else:
-                json.dump(fp, self.data) if data_only else json.dumps(self.__dict__)
+                json.dump(fp, self.data, indent=indent) if data_only else json.dump(self.__dict__, indent=indent)
         else:
-            return json.dumps(self.data) if data_only else json.dumps(self.__dict__)
+            return json.dumps(self.data, indent=indent) if data_only else json.dumps(self.__dict__, indent=indent)
 
     def to_csv(self, fp=None, data_only=False, csv_formater='{},{}', header_formater='{}: {}'):
         """
@@ -237,6 +237,10 @@ class Tome(DataDict):
 
     def to_tsv(self, fp=None, data_only=False, csv_formater='{}\t{}', header_formater='{}: {}'):
         """Convenience call to csv with tab delimiter."""
+        return self.to_csv(fp=fp, data_only=data_only, csv_formater=csv_formater, header_formater=header_formater)
+
+    def to_text(self, fp=None, data_only=False, csv_formater='{}: {}', header_formater='{}: {}'):
+        """Convenience call to csv with colon delimiter."""
         return self.to_csv(fp=fp, data_only=data_only, csv_formater=csv_formater, header_formater=header_formater)
 
     def to_html(self, fp=None, data_only=False, header_formater='{}: {}'):
