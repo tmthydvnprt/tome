@@ -8,6 +8,9 @@ import pickle
 import pprint
 import collections
 
+# import fuzzywuzzy with warning suppression
+import warnings
+warnings.filterwarnings('ignore', 'Using slow pure-python SequenceMatcher. Install python-Levenshtein to remove this warning')
 from fuzzywuzzy import process
 
 # Various Initialization
@@ -139,7 +142,6 @@ class DataDict(collections.MutableMapping):
     def __str__(self):
         """Print the 'dictionary'."""
         return str(self.data)
-
     def __repr__(self):
         """Create reproducible string, so that eval(x.__repr__()) == x."""
         return 'D({!r})'.format(self.data)
@@ -154,15 +156,15 @@ class Tome(DataDict):
     header_order = ['name', 'description', 'date', 'authority', 'reference', 'living', 'derived', 'source']
 
     # Alias some of the general dictionary helper functions as class methods
-    flip = flip_key_val
     regex_search = regex_search
     fuzzy_search = fuzzy_search
     fuzzy_matches = fuzzy_matches
 
-    def __init__(self, data=None, name='Tome', description='A container of information.', key='', value='', authority='', reference='', living=False, derived=False, source=None, date=None):
+    def __init__(self, data=None, ignore_case=False, name='Tome', description='A container of information.', key='', value='', authority='', reference='', living=False, derived=False, source=None, date=None):
         """Add new properties to regular dictionary initialization."""
         # The 'real' dictionary
         self.data = data
+        self.ignore_case = ignore_case
         # Nice info about the data
         self.name = name
         self.description = description
@@ -178,6 +180,13 @@ class Tome(DataDict):
         # Defines whether this data was generated or derived from another Tome source
         self.derived = derived
         self.source = source
+
+    def flip(self, smart=True, container=list):
+        """Flip key value pairs.  Alias for general flip_key_value but returns Tome object."""
+        d = flip_key_val(self.data, smart=smart, container=container)
+        meta = {k:v for k, v in self.__dict__.iteritems() if k not in {'data', 'key', 'value'}}
+        t = Tome(data=d, key=self.value, value=self.key, **meta)
+        return t
 
     def copy(self, deep=True):
         return copy.deepcopy(self) if deep else copy.copy(self)
