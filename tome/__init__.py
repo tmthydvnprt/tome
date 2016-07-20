@@ -115,7 +115,7 @@ def fuzzy_matches(x=None, query='', where='both', score_cutoff=50, limit=10):
 ################################################################################################################################
 class DataDict(collections.MutableMapping):
     """
-    Make a dictionary like object that operates on an attribute called data instead of the typical __dict__.
+    Make a dictionary like object that operates on an attribute called data instead of the typical __dict__ and allow optional case insensitive keys.
 
     Reference credit and thanks
     @aaron-hall (http://stackoverflow.com/a/21368848/2087463) & @jochen-ritzel (http://stackoverflow.com/a/3387975/2087463)
@@ -129,11 +129,25 @@ class DataDict(collections.MutableMapping):
             self.data = dict(*args, **kwargs)
 
     def __setitem__(self, key, value):
-        self.data[key] = value
+        if self.ignore_case:
+            self.lowkey[key.lower()] = key
+            self.data[key] = value
+        else:
+            self.data[key] = value
     def __getitem__(self, key):
-        return self.data[key]
+        if self.ignore_case:
+            if key not in self.data:
+                return self.data[self.lowkey[key]]
+            else:
+                return self.data[key]
+        else:
+            return self.data[key]
     def __delitem__(self, key):
-        del self.data[key]
+        if self.ignore_case:
+            del self.data[self.lowkey[key]]
+            del self.lowkey[key]
+        else:
+            del self.data[key]
     def __iter__(self):
         return iter(self.data)
     def __len__(self):
@@ -165,6 +179,8 @@ class Tome(DataDict):
         # The 'real' dictionary
         self.data = data
         self.ignore_case = ignore_case
+        if ignore_case:
+            self.lowkey = {k.lower():k for k in data.iterkeys()}
         # Nice info about the data
         self.name = name
         self.description = description
@@ -184,7 +200,7 @@ class Tome(DataDict):
     def flip(self, smart=True, container=list):
         """Flip key value pairs.  Alias for general flip_key_value but returns Tome object."""
         d = flip_key_val(self.data, smart=smart, container=container)
-        meta = {k:v for k, v in self.__dict__.iteritems() if k not in {'data', 'key', 'value'}}
+        meta = {k:v for k, v in self.__dict__.iteritems() if k not in {'data', 'key', 'value', 'lowkey'}}
         t = Tome(data=d, key=self.value, value=self.key, **meta)
         return t
 
