@@ -223,25 +223,27 @@ class Tome(DataDict):
 
     def to_pickle(self, fp=None, data_only=False):
         """Convert tome to pickle. Use data_only=True to convert just the data."""
+        convert_data = self.data if data_only else {k : v for k, v in self.__dict__.iteritems() if k != 'lowkey'}
         if fp:
             if isinstance(fp, str) or isinstance(fp, unicode):
                 with open(fp, 'w') as f:
-                    pickle.dump(f, self.data) if data_only else json.dumps(self.__dict__)
+                    pickle.dump(f, convert_data)
             else:
-                pickle.dump(fp, self.data) if data_only else json.dumps(self.__dict__)
+                pickle.dump(fp, convert_data)
         else:
-            return pickle.dumps(self.data) if data_only else json.dumps(self.__dict__)
+            return pickle.dumps(convert_data)
 
     def to_json(self, fp=None, data_only=False, indent=4):
         """Convert tome to json. Use data_only=True to convert just the data."""
+        convert_data = self.data if data_only else {k : v for k, v in self.__dict__.iteritems() if k != 'lowkey'}
         if fp:
             if isinstance(fp, str) or isinstance(fp, unicode):
                 with open(fp, 'w') as f:
-                    json.dump(f, self.data, indent=indent) if data_only else json.dump(self.__dict__, indent=indent)
+                    json.dump(f, convert_data, indent=indent)
             else:
-                json.dump(fp, self.data, indent=indent) if data_only else json.dump(self.__dict__, indent=indent)
+                json.dump(fp, convert_data, indent=indent)
         else:
-            return json.dumps(self.data, indent=indent) if data_only else json.dumps(self.__dict__, indent=indent)
+            return json.dumps(convert_data, indent=indent)
 
     def to_csv(self, fp=None, data_only=False, csv_formater='{},{}', header_formater='{}: {}'):
         """
