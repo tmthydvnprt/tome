@@ -174,7 +174,7 @@ class Tome(DataDict):
     fuzzy_search = fuzzy_search
     fuzzy_matches = fuzzy_matches
 
-    def __init__(self, data=None, ignore_case=False, name='Tome', description='A container of information.', key='', value='', authority='', reference='', living=False, derived=False, source=None, date=None):
+    def __init__(self, data=None, ignore_case=False, name='', description='', key='A_Key', value='A_Val', authority='', reference='', living=False, derived=False, source=None, date=None):
         """Add new properties to regular dictionary initialization."""
         # The 'real' dictionary
         self.data = data
@@ -182,7 +182,7 @@ class Tome(DataDict):
         if ignore_case:
             self.lowkey = {k.lower():k for k in data.iterkeys()}
         # Nice info about the data
-        self.name = name
+        self.name = name if name else '{} to {}'.format(key, value)
         self.description = description
         self.date = date
         self.key = key
@@ -200,7 +200,7 @@ class Tome(DataDict):
     def flip(self, smart=True, container=list):
         """Flip key value pairs.  Alias for general flip_key_value but returns Tome object."""
         d = flip_key_val(self.data, smart=smart, container=container)
-        meta = {k:v for k, v in self.__dict__.iteritems() if k not in {'data', 'key', 'value', 'lowkey'}}
+        meta = {k:v for k, v in self.__dict__.iteritems() if k not in {'data', 'name', 'key', 'value', 'lowkey'}}
         t = Tome(data=d, key=self.value, value=self.key, **meta)
         return t
 
