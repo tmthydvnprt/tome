@@ -162,7 +162,21 @@ class DataDict(collections.MutableMapping):
 
 class Tome(DataDict):
     """
-    The tome class, which provides extra dictionary functionality.
+    The `Tome` class. Provides extra dictionary functionality.
+
+    Features:
+    - flip key values pairs
+    - deep copy
+    - regex search on key or value
+    - fuzzy search on key or value (via [fuzzywuzzy](https://github.com/seatgeek/fuzzywuzzy))
+    - value conversion `astype()`
+    - dictionary conversion
+        - returned variable:
+            - simple datatype: tuples and lists
+        - write to file or returned variable:
+            - object storage: pickle, json
+            - plaintext: txt, csv, tsv, html
+
     """
 
     # order in wich attibutes are access when printing this class
